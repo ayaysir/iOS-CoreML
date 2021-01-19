@@ -7,7 +7,7 @@ View controller for selecting images and applying Vision + Core ML processing.
 
 import UIKit
 import CoreML
-import Vision
+import Vision // 이미지 고급 처리
 import ImageIO
 
 class ImageClassificationViewController: UIViewController {
@@ -27,7 +27,9 @@ class ImageClassificationViewController: UIViewController {
              To use a different Core ML classifier model, add it to the project
              and replace `MobileNet` with that model's generated Swift class.
              */
-            let model = try VNCoreMLModel(for: MobileNet().model)
+
+            // 모델 클래스 선택
+            let model = try VNCoreMLModel(for: DogCatClassifier(configuration: MLModelConfiguration()).model)
             
             let request = VNCoreMLRequest(model: model, completionHandler: { [weak self] request, error in
                 self?.processClassifications(for: request, error: error)
@@ -43,7 +45,7 @@ class ImageClassificationViewController: UIViewController {
     func updateClassifications(for image: UIImage) {
         classificationLabel.text = "Classifying..."
         
-        let orientation = CGImagePropertyOrientation(image.imageOrientation)
+        let orientation = CGImagePropertyOrientation(image.imageOrientation) // 이미지 방향
         guard let ciImage = CIImage(image: image) else { fatalError("Unable to create \(CIImage.self) from \(image).") }
         
         DispatchQueue.global(qos: .userInitiated).async {
